@@ -106,7 +106,7 @@ $ heroku config:set DISABLE_COLLECTSTATIC=1
 ALLOWED_HOSTS = ['127.0.0.1', '.herokuapp.com']
 ```
 
-7. Then push the current version to deploy it
+6. Then push the current version to deploy it
 
 ```shell
 $ git push heroku master
