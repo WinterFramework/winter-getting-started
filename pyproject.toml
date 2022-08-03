@@ -5,8 +5,9 @@ description = ""
 authors = ["Alexander Egorov <mofr@zond.org>"]
 
 [tool.poetry.dependencies]
-python = "3.8.7"
+python = "3.8.13"
 winter = "^10.0.0"
+gunicorn = "^20.1.0"
 
 [tool.poetry.dev-dependencies]
 

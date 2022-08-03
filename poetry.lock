@@ -132,6 +132,20 @@ python-versions = ">=2.7,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*"
 docs = ["sphinx"]
 
 [[package]]
+name = "gunicorn"
+version = "20.1.0"
+description = "WSGI HTTP Server for UNIX"
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[package.extras]
+eventlet = ["eventlet (>=0.24.1)"]
+gevent = ["gevent (>=1.4.0)"]
+setproctitle = ["setproctitle"]
+tornado = ["tornado (>=0.2)"]
+
+[[package]]
 name = "idna"
 version = "3.3"
 description = "Internationalized Domain Names in Applications (IDNA)"
@@ -391,8 +405,8 @@ typing-extensions = ">=3.10.0,<4.0.0"
 
 [metadata]
 lock-version = "1.1"
-python-versions = "3.8.7"
-content-hash = "9af3265432ac1698662c10ad57bc70bfe093084a13778e2bd53b31a26bcab933"
+python-versions = "3.8.13"
+content-hash = "1339fc9a656fdcf2788e27cc1e3a1d7031b032ba757cf0e9c1d66bce88ef86fa"
 
 [metadata.files]
 certifi = []
@@ -406,6 +420,7 @@ docstring-parser = []
 drf-yasg = []
 furl = []
 greenlet = []
+gunicorn = []
 idna = []
 inflection = []
 injector = []
