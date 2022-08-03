@@ -57,12 +57,13 @@ Dev server:
 $ poetry run python manage.py runserver
 ```
 
-Manually check it's working:
+Check it's working http://localhost:8000/greeting/
 
 ```shell
 $ http get http://localhost:8000/greeting/
 ```
 
+Expected output:
 ```
 HTTP/1.1 200 OK
 Allow: GET, HEAD, OPTIONS
@@ -110,4 +111,25 @@ ALLOWED_HOSTS = ['127.0.0.1', '.herokuapp.com']
 
 ```shell
 $ git push heroku master
+```
+
+7. Check it's working https://winter-getting-started.herokuapp.com/greeting/
+```shell
+$ http get https://winter-getting-started.herokuapp.com/greeting/
+```
+
+Expected output:
+```
+HTTP/1.1 200 OK 
+Allow: GET, HEAD, OPTIONS
+Connection: keep-alive
+Content-Length: 24
+Content-Type: application/json
+Date: Wed, 03 Aug 2022 22:51:26 GMT
+Server: gunicorn
+Vary: Cookie
+Via: 1.1 vegur
+X-Frame-Options: SAMEORIGIN
+
+"Hello from Winter API!"
 ```
