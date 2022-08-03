@@ -391,8 +391,8 @@ typing-extensions = ">=3.10.0,<4.0.0"
 
 [metadata]
 lock-version = "1.1"
-python-versions = "^3.8.1"
-content-hash = "d9c35c2d14c3c106869f50662de2f52af86b6c73d8346a2dd6485850ea8495fb"
+python-versions = "3.8.7"
+content-hash = "9af3265432ac1698662c10ad57bc70bfe093084a13778e2bd53b31a26bcab933"
 
 [metadata.files]
 certifi = []
