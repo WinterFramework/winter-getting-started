@@ -71,6 +71,11 @@ heroku buildpacks:add https://github.com/moneymeets/python-poetry-buildpack.git
 heroku buildpacks:add heroku/python
 ```
 
-3. Then push the current version to deploy it
+3. Add `Procfile` with contents:
+```
+web: gunicorn simple_api.wsgi
+```
+
+4. Then push the current version to deploy it
 
 `git push heroku master`
