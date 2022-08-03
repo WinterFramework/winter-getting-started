@@ -65,16 +65,12 @@ How to deploy to Heroku
 
 `heroku apps:create winter-getting-started`
 
-2. Add `runtime.txt` at the project root with contents:
+2. Add poetry buildpack for Heroku:
 ```
-python-3.8.7
-```
-
-3. Add `Procfile` with contents:
-```
-web: gunicorn simple_api.wsgi
+heroku buildpacks:add https://github.com/moneymeets/python-poetry-buildpack.git
+heroku buildpacks:add heroku/python
 ```
 
-4. Then push the current version to deploy it
+3. Then push the current version to deploy it
 
 `git push heroku master`
