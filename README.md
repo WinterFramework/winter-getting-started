@@ -62,6 +62,7 @@ X-Frame-Options: SAMEORIGIN
 How to deploy to Heroku
 -----------------------
 1. First create a Heroku application and basic configuration required for python
+
 `heroku apps:create winter-getting-started`
 
 2. Add poetry buildpack for Heroku:
@@ -76,8 +77,14 @@ web: gunicorn simple_api.wsgi
 ```
 
 4. Disable Django collectstatic since we don't need it
+
 `heroku config:set DISABLE_COLLECTSTATIC=1`
 
-5. Then push the current version to deploy it
+5. Add heroku hosts to settings.ALLOWED_HOSTS
+```
+ALLOWED_HOSTS = ['127.0.0.1', '.herokuapp.com']
+```
+
+7. Then push the current version to deploy it
 
 `git push heroku master`
