@@ -58,3 +58,23 @@ X-Frame-Options: SAMEORIGIN
 
 "Hello from Winter API!"
 ```
+
+How to deploy to Heroku
+-----------------------
+1. First create a Heroku application and basic configuration required for python
+
+`heroku apps:create winter-getting-started`
+
+2. Add `runtime.txt` at the project root with contents:
+```
+python-3.8.7
+```
+
+3. Add `Procfile` with contents:
+```
+web: gunicorn simple_api.wsgi
+```
+
+4. Then push the current version to deploy it
+
+`git push heroku master`
