@@ -49,6 +49,32 @@ REST_FRAMEWORK = {
 }
 ```
 
+6. Add Swagger UI
+
+Add to `urls.py`:
+```python
+from django.urls import re_path
+from drf_yasg import openapi
+from drf_yasg.views import get_schema_view
+
+schema_view = get_schema_view(
+    openapi.Info(title='Getting Started Winter API', default_version='v1'),
+    patterns=urlpatterns,
+)
+urlpatterns += [
+    re_path(r'^$', schema_view.with_ui('swagger'), name='schema-swagger-ui'),
+]
+```
+
+Add to `settings.py`:
+```python
+SWAGGER_SETTINGS = {
+    'DEFAULT_AUTO_SCHEMA_CLASS': 'winter_openapi.SwaggerAutoSchema',
+}
+```
+
+Add `drf_yasg` to `INSTALLED_APPS`:
+
 How to run
 ----------
 
