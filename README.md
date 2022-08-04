@@ -20,7 +20,7 @@ class SimpleAPI:
         return 'Hello from Winter API!'
 ```
 
-4. Modify `urls.py` to the following:
+4. Add the following code to `simple_api/__init__.py`:
 ```python
 import winter
 import winter_django
@@ -40,7 +40,16 @@ urlpatterns = [
 ]
 ```
 
-5. Enable winter JSON capabilities by adding the following code to `settings.py`
+5. Modify `urls.py` to the following:
+```python
+from winter_django.autodiscovery import create_django_urls_for_package
+
+urlpatterns = [
+    *create_django_urls_for_package('simple_api'),
+]
+```
+
+6. Enable winter JSON capabilities by adding the following code to `settings.py`
 ```
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
@@ -49,7 +58,7 @@ REST_FRAMEWORK = {
 }
 ```
 
-6. Add Swagger UI
+7. Add Swagger UI
 
 Add to `urls.py`:
 ```python
