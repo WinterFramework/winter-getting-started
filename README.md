@@ -20,27 +20,7 @@ class SimpleAPI:
         return 'Hello from Winter API!'
 ```
 
-4. Add the following code to `simple_api/__init__.py`:
-```python
-import winter
-import winter_django
-import winter_openapi
-from winter_django.autodiscovery import create_django_urls_for_package
-from winter.core import set_injector
-from injector import Injector
-
-set_injector(Injector())
-
-winter.web.setup()
-winter_django.setup()
-winter_openapi.setup(allow_missing_raises_annotation=True)
-
-urlpatterns = [
-    *create_django_urls_for_package('simple_api'),
-]
-```
-
-5. Modify `urls.py` to the following:
+4. Modify `urls.py` to the following:
 ```python
 from winter_django.autodiscovery import create_django_urls_for_package
 
@@ -49,16 +29,27 @@ urlpatterns = [
 ]
 ```
 
-6. Enable winter JSON capabilities by adding the following code to `settings.py`
-```
+5. Add the following code to `settings.py`
+```python
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
         'winter_django.renderers.JSONRenderer',
     ],
 }
+
+import winter.core
+import winter_django
+import winter_openapi
+from injector import Injector
+
+
+winter.core.set_injector(Injector())
+winter.web.setup()
+winter_django.setup()
+winter_openapi.setup(allow_missing_raises_annotation=True)
 ```
 
-7. Add Swagger UI
+6. Add Swagger UI
 
 Add to `urls.py`:
 ```python
@@ -82,7 +73,7 @@ SWAGGER_SETTINGS = {
 }
 ```
 
-Add `drf_yasg` to `INSTALLED_APPS`:
+Add `drf_yasg` to `INSTALLED_APPS`
 
 How to run
 ----------
