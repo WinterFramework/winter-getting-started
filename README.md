@@ -127,13 +127,18 @@ web: gunicorn simple_api.wsgi
 ALLOWED_HOSTS = ['127.0.0.1', '.herokuapp.com']
 ```
 
-5. Then push the current version to deploy it
+5. Setup STATIC_ROOT in `settings.py`
+```
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+```
+
+6. Then push the current version to deploy it
 
 ```shell
 $ git push heroku master
 ```
 
-6. Check it's working https://winter-getting-started.herokuapp.com/greeting/
+7. Check it's working https://winter-getting-started.herokuapp.com/greeting/
 ```shell
 $ http get https://winter-getting-started.herokuapp.com/greeting/
 ```
