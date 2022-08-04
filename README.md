@@ -1,14 +1,15 @@
 How to start project with Winter
 --------------------------------
-1. Bootstrap empty project
+Bootstrap empty project
 ```shell
 $ poetry init
 $ poetry add winter
 $ poetry run django-admin startproject simple_api .
 ```
 
-2. Add `rest_framework` to `settings.INSTALLED_APPS`
-3. Add `simple_api/api.py` with contents:
+Add `rest_framework` to `settings.INSTALLED_APPS`
+
+Add `simple_api/api.py` with contents:
 ```python
 import winter
 
@@ -20,7 +21,7 @@ class SimpleAPI:
         return 'Hello from Winter API!'
 ```
 
-4. Modify `urls.py` to the following:
+Modify `urls.py` to the following:
 ```python
 from winter_django.autodiscovery import create_django_urls_for_package
 
@@ -29,7 +30,7 @@ urlpatterns = [
 ]
 ```
 
-5. Add the following code to `settings.py`
+Add the following code to `settings.py`
 ```python
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
@@ -49,7 +50,8 @@ winter_django.setup()
 winter_openapi.setup(allow_missing_raises_annotation=True)
 ```
 
-6. Add Swagger UI
+Add Swagger UI
+--------------
 
 Add to `urls.py`:
 ```python
@@ -71,9 +73,12 @@ Add to `settings.py`:
 SWAGGER_SETTINGS = {
     'DEFAULT_AUTO_SCHEMA_CLASS': 'winter_openapi.SwaggerAutoSchema',
 }
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 ```
 
 Add `drf_yasg` to `INSTALLED_APPS`
+
+Setup whitenoise to serve static files: https://whitenoise.evans.io/en/stable/django.html
 
 How to run
 ----------
@@ -105,40 +110,35 @@ X-Frame-Options: SAMEORIGIN
 
 How to deploy to Heroku
 -----------------------
-1. First create a Heroku application and basic configuration required for python
+First create a Heroku application and basic configuration required for python
 
 ```shell
 $ heroku apps:create winter-getting-started
 ```
 
-2. Add poetry buildpack for Heroku:
+Add poetry buildpack for Heroku:
 ```shell
 $ heroku buildpacks:add https://github.com/moneymeets/python-poetry-buildpack.git
 $ heroku buildpacks:add heroku/python
 ```
 
-3. Add `Procfile` with contents:
+Add `Procfile` with contents:
 ```
 web: gunicorn simple_api.wsgi
 ```
 
-4. Add heroku hosts to settings.ALLOWED_HOSTS
+Add heroku hosts to settings.ALLOWED_HOSTS
 ```
 ALLOWED_HOSTS = ['127.0.0.1', '.herokuapp.com']
 ```
 
-5. Setup STATIC_ROOT in `settings.py`
-```
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-```
-
-6. Then push the current version to deploy it
+Then push the current version to deploy it
 
 ```shell
 $ git push heroku master
 ```
 
-7. Check it's working https://winter-getting-started.herokuapp.com/greeting/
+Check it's working https://winter-getting-started.herokuapp.com/greeting/
 ```shell
 $ http get https://winter-getting-started.herokuapp.com/greeting/
 ```
