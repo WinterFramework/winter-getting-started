@@ -122,24 +122,18 @@ $ heroku buildpacks:add heroku/python
 web: gunicorn simple_api.wsgi
 ```
 
-4. Disable Django collectstatic since we don't need it
-
-```shell
-$ heroku config:set DISABLE_COLLECTSTATIC=1
-```
-
-5. Add heroku hosts to settings.ALLOWED_HOSTS
+4. Add heroku hosts to settings.ALLOWED_HOSTS
 ```
 ALLOWED_HOSTS = ['127.0.0.1', '.herokuapp.com']
 ```
 
-6. Then push the current version to deploy it
+5. Then push the current version to deploy it
 
 ```shell
 $ git push heroku master
 ```
 
-7. Check it's working https://winter-getting-started.herokuapp.com/greeting/
+6. Check it's working https://winter-getting-started.herokuapp.com/greeting/
 ```shell
 $ http get https://winter-getting-started.herokuapp.com/greeting/
 ```
