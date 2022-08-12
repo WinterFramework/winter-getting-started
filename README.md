@@ -1,5 +1,7 @@
 [![Heroku](https://pyheroku-badge.herokuapp.com/?app=winter-getting-started)](https://winter-getting-started.herokuapp.com/)
 
+![Tests](https://github.com/WinterFramework/winter-getting-started/actions/workflows/test.yml/badge.svg?event=push)
+
 How to start project with Winter
 --------------------------------
 Bootstrap empty project
