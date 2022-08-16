@@ -7,12 +7,9 @@ Bootstrap empty project
 ```shell
 $ poetry init
 $ poetry add winter
-$ poetry run django-admin startproject simple_api .
 ```
 
-Add `rest_framework` to `settings.INSTALLED_APPS`
-
-Add `simple_api/api.py` with contents:
+Add `src/api.py` with contents:
 ```python
 import winter
 
@@ -24,36 +21,13 @@ class SimpleAPI:
         return 'Hello from Winter API!'
 ```
 
-Modify `urls.py` to the following:
+Add `wsgi.py` with contents:
 ```python
-from winter_django.autodiscovery import create_django_urls_for_package
-
-urlpatterns = [
-    *create_django_urls_for_package('simple_api'),
-]
-```
-
-Add the following code to `settings.py`
-```python
-REST_FRAMEWORK = {
-    'DEFAULT_RENDERER_CLASSES': [
-        'winter_django.renderers.JSONRenderer',
-    ],
-}
-
-import winter.core
 import winter_django
-import winter_openapi
-from injector import Injector
-
-
-winter.core.set_injector(Injector())
-winter.web.setup()
-winter_django.setup()
-winter_openapi.setup(allow_missing_raises_annotation=True)
+application = winter_django.create_wsgi('src')
 ```
 
-Add Swagger UI
+Add Swagger UI (Broken in this branch)
 --------------
 
 Add to `urls.py`:
@@ -86,15 +60,16 @@ Setup whitenoise to serve static files: https://whitenoise.evans.io/en/stable/dj
 How to run
 ----------
 
-Dev server:
+You can use any WSGI server, for example waitress:
 ```shell
-$ poetry run python manage.py runserver
+$ poetry add waitress
+$ poetry run watress-serve wsgi:application
 ```
 
-Check it's working http://localhost:8000/greeting/
+Check it's working http://localhost:8080/greeting/
 
 ```shell
-$ http get http://localhost:8000/greeting/
+$ http get http://localhost:8080/greeting/
 ```
 
 Expected output:
@@ -104,14 +79,14 @@ Allow: GET, HEAD, OPTIONS
 Content-Length: 24
 Content-Type: application/json
 Date: Wed, 03 Aug 2022 21:44:55 GMT
-Server: WSGIServer/0.2 CPython/3.8.7
+Server: waitress
 Vary: Accept, Cookie
 X-Frame-Options: SAMEORIGIN
 
 "Hello from Winter API!"
 ```
 
-How to deploy to Heroku
+How to deploy to Heroku (Broken in this branch)
 -----------------------
 First create a Heroku application and basic configuration required for python
 
@@ -127,7 +102,7 @@ $ heroku buildpacks:add heroku/python
 
 Add `Procfile` with contents:
 ```
-web: gunicorn simple_api.wsgi
+web: gunicorn wsgi
 ```
 
 Add heroku hosts to settings.ALLOWED_HOSTS

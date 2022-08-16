@@ -1,6 +1,6 @@
 import pytest
 import httpx
-from simple_api.wsgi import application
+from wsgi import application
 
 
 @pytest.fixture()
