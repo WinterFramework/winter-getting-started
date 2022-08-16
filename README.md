@@ -27,6 +27,35 @@ import winter_django
 application = winter_django.create_wsgi('src')
 ```
 
+How to run
+----------
+
+You can use any WSGI server, for example waitress:
+```shell
+$ poetry add waitress
+$ poetry run watress-serve wsgi:application
+```
+
+Check it's working http://localhost:8080/greeting/
+
+```shell
+$ http get http://localhost:8080/greeting/
+```
+
+Expected output:
+```
+HTTP/1.1 200 OK
+Allow: GET, HEAD, OPTIONS
+Content-Length: 24
+Content-Type: application/json
+Date: Wed, 03 Aug 2022 21:44:55 GMT
+Server: waitress
+Vary: Accept, Cookie
+X-Frame-Options: SAMEORIGIN
+
+"Hello from Winter API!"
+```
+
 Add Swagger UI (Broken in this branch)
 --------------
 
@@ -56,35 +85,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 Add `drf_yasg` to `INSTALLED_APPS`
 
 Setup whitenoise to serve static files: https://whitenoise.evans.io/en/stable/django.html
-
-How to run
-----------
-
-You can use any WSGI server, for example waitress:
-```shell
-$ poetry add waitress
-$ poetry run watress-serve wsgi:application
-```
-
-Check it's working http://localhost:8080/greeting/
-
-```shell
-$ http get http://localhost:8080/greeting/
-```
-
-Expected output:
-```
-HTTP/1.1 200 OK
-Allow: GET, HEAD, OPTIONS
-Content-Length: 24
-Content-Type: application/json
-Date: Wed, 03 Aug 2022 21:44:55 GMT
-Server: waitress
-Vary: Accept, Cookie
-X-Frame-Options: SAMEORIGIN
-
-"Hello from Winter API!"
-```
 
 How to deploy to Heroku (Broken in this branch)
 -----------------------
