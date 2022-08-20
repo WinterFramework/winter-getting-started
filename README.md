@@ -33,7 +33,7 @@ How to run
 You can use any WSGI server, for example waitress:
 ```shell
 $ poetry add waitress
-$ poetry run watress-serve wsgi:application
+$ poetry run waitress-serve wsgi:application
 ```
 
 Check it's working http://localhost:8080/greeting/
