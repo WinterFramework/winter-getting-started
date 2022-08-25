@@ -76,12 +76,7 @@ Add to `settings.py`:
 SWAGGER_SETTINGS = {
     'DEFAULT_AUTO_SCHEMA_CLASS': 'winter_openapi.SwaggerAutoSchema',
 }
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 ```
-
-Add `drf_yasg` to `INSTALLED_APPS`
-
-Setup whitenoise to serve static files: https://whitenoise.evans.io/en/stable/django.html
 
 How to run
 ----------
