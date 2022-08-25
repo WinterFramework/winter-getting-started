@@ -58,17 +58,39 @@ Add Swagger UI
 
 Add to `urls.py`:
 ```python
+from winter_django.autodiscovery import create_django_urls_for_package
 from django.urls import re_path
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
+
+urlpatterns = [
+    *create_django_urls_for_package('simple_api'),
+]
 
 schema_view = get_schema_view(
     openapi.Info(title='Getting Started Winter API', default_version='v1'),
     patterns=urlpatterns,
 )
 urlpatterns += [
-    re_path(r'^$', schema_view.with_ui('swagger'), name='schema-swagger-ui'),
+    re_path(r'^openapi$', schema_view.without_ui()),
 ]
+```
+
+Add `src/swagger_ui.py` with the following contents:
+```python
+from django.http import HttpResponse
+
+import winter
+import winter_openapi
+
+
+@winter.web.no_authentication
+class SwaggerUI:
+    @winter.route_get('')
+    def get_swagger_ui(self):
+        html = winter_openapi.get_swagger_ui_html(openapi_url='/openapi?format=openapi')
+        return HttpResponse(html, content_type='text/html')
+
 ```
 
 Add to `settings.py`:
