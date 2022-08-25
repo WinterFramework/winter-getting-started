@@ -13,5 +13,5 @@ schema_view = get_schema_view(
     patterns=urlpatterns,
 )
 urlpatterns += [
-    re_path(r'^$', schema_view.with_ui('swagger'), name='schema-swagger-ui'),
+    re_path(r'^openapi$', schema_view.without_ui()),
 ]

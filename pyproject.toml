@@ -1,14 +1,13 @@
 [tool.poetry]
-name = "winter_example_1"
+name = "winter_getting_started"
 version = "1.0"
 description = ""
 authors = ["Alexander Egorov <mofr@zond.org>"]
 
 [tool.poetry.dependencies]
 python = "^3.8 || ^3.9 || ^3.10"
-winter = "^10.0.0"
+winter = "10.0.1"
 gunicorn = "^20.1.0"
-whitenoise = "^6.2.0"
 pytest = "^7.1.2"
 httpx = "^0.23.0"
 
