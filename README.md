@@ -1,5 +1,6 @@
-[![Heroku](https://pyheroku-badge.herokuapp.com/?app=winter-getting-started)](https://winter-getting-started.herokuapp.com/)
 ![Tests](https://github.com/WinterFramework/winter-getting-started/actions/workflows/test.yml/badge.svg?event=push)
+
+[Deployed Demo](https://getting-started.winter-framework.org/)
 
 How to start project with Winter
 --------------------------------
@@ -103,9 +104,11 @@ SWAGGER_SETTINGS = {
 How to run
 ----------
 
-Dev server:
+You can use any WSGI server, for example gunicorn or waitress:
+
 ```shell
-$ poetry run python manage.py runserver
+$ poetry add gunicorn
+$ poetry run gunicorn simple_api:wsgi
 ```
 
 Check it's working http://localhost:8000/greeting/
