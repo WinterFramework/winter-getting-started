@@ -13,4 +13,4 @@ RUN poetry config virtualenvs.create false \
 
 COPY . /app
 
-CMD ["gunicorn", "--bind", "0.0.0.0", "simple_api.wsgi"]
+CMD gunicorn --bind :$PORT simple_api.wsgi
