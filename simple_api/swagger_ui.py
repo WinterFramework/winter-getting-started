@@ -8,5 +8,6 @@ import winter_openapi
 class SwaggerUI:
     @winter.route_get('')
     def get_swagger_ui(self):
+        """HTML page with Swagger UI"""
         html = winter_openapi.get_swagger_ui_html(openapi_url='/openapi?format=openapi')
         return HttpResponse(html, content_type='text/html')
