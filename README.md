@@ -27,11 +27,12 @@ class SimpleAPI:
 
 Modify `urls.py` to the following:
 ```python
-from winter_django.autodiscovery import create_django_urls_for_package
+from winter.web import find_package_routes
+from winter_django import create_django_urls_from_routes
 
-urlpatterns = [
-    *create_django_urls_for_package('simple_api'),
-]
+routes = find_package_routes('simple_api')
+urlpatterns = create_django_urls_from_routes(routes)
+
 ```
 
 Add the following code to `settings.py`
@@ -54,51 +55,35 @@ winter_django.setup()
 winter_openapi.setup(allow_missing_raises_annotation=True)
 ```
 
-Add Swagger UI
---------------
+Add OpenAPI and Swagger UI
+--------------------------
 
-Add to `urls.py`:
+Add `src/openapi.py` with the following contents:
 ```python
-from winter_django.autodiscovery import create_django_urls_for_package
-from django.urls import re_path
-from drf_yasg import openapi
-from drf_yasg.views import get_schema_view
-
-urlpatterns = [
-    *create_django_urls_for_package('simple_api'),
-]
-
-schema_view = get_schema_view(
-    openapi.Info(title='Getting Started Winter API', default_version='v1'),
-    patterns=urlpatterns,
-)
-urlpatterns += [
-    re_path(r'^openapi$', schema_view.without_ui()),
-]
-```
-
-Add `src/swagger_ui.py` with the following contents:
-```python
-from django.http import HttpResponse
-
 import winter
 import winter_openapi
+from django.http import HttpResponse
+from winter.web import find_package_routes
 
 
 @winter.web.no_authentication
-class SwaggerUI:
+class OpenAPI:
+    @winter.route_get('openapi.json')
+    def openapi(self):
+        """OpenAPI specification"""
+        routes = find_package_routes('simple_api.api')
+        return winter_openapi.generate_openapi(
+            'Getting Started Winter API',
+            'v1',
+            routes,
+        )
+
     @winter.route_get('')
-    def get_swagger_ui(self):
-        html = winter_openapi.get_swagger_ui_html(openapi_url='/openapi?format=openapi')
+    def swagger_ui(self):
+        """HTML page with Swagger UI"""
+        html = winter_openapi.get_swagger_ui_html(openapi_url='/openapi.json')
         return HttpResponse(html, content_type='text/html')
 
-```
-
-Add to `settings.py`:
-```python
-SWAGGER_SETTINGS = {
-    'DEFAULT_AUTO_SCHEMA_CLASS': 'winter_openapi.SwaggerAutoSchema',
-}
 ```
 
 How to run

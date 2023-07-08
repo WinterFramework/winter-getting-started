@@ -1,17 +1,5 @@
-from winter_django.autodiscovery import create_django_urls_for_package
-from django.urls import re_path
-from drf_yasg import openapi
-from drf_yasg.views import get_schema_view
+from winter.web import find_package_routes
+from winter_django import create_django_urls_from_routes
 
-
-urlpatterns = [
-    *create_django_urls_for_package('simple_api'),
-]
-
-schema_view = get_schema_view(
-    openapi.Info(title='Getting Started Winter API', default_version='v1'),
-    patterns=urlpatterns,
-)
-urlpatterns += [
-    re_path(r'^openapi$', schema_view.without_ui()),
-]
+routes = find_package_routes('simple_api')
+urlpatterns = create_django_urls_from_routes(routes)

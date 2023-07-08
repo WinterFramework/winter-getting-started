@@ -125,9 +125,6 @@ REST_FRAMEWORK = {
         'winter_django.renderers.JSONRenderer',
     ],
 }
-SWAGGER_SETTINGS = {
-    'DEFAULT_AUTO_SCHEMA_CLASS': 'winter_openapi.SwaggerAutoSchema',
-}
 
 import winter.core
 import winter_django
