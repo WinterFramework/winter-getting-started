@@ -1,7 +1,5 @@
 ![Tests](https://github.com/WinterFramework/winter-getting-started/actions/workflows/test.yml/badge.svg?event=push)
 
-[Deployed Demo](https://getting-started.winter-framework.org/)
-
 How to start project with Winter
 --------------------------------
 Bootstrap empty project
