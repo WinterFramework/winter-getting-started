@@ -61,6 +61,8 @@ jobs:
     - name: Authenticate Docker with Google Artifact Registry
       run: gcloud auth configure-docker
 
+    - uses: simenandre/setup-gke-gcloud-auth-plugin@v1
+
     - name: Deploy to GKE
       run: |
         gcloud container clusters get-credentials $CLUSTER_NAME --zone $CLUSTER_ZONE
