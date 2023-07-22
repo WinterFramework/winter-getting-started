@@ -106,6 +106,14 @@ X-Frame-Options: SAMEORIGIN
 "Hello from Winter API!"
 ```
 
+How to deploy to GKE
+--------------------
+
+The repository contains the example deployment to GKE. Files of interest:
+- [Dockerfile](Dockerfile) - Dockerfile to build the application image
+- [deployment.yaml](deployment.yaml) - k8s deployment configuration
+- [.github/workflows/gke.yml](.github/workflows/gke.yml) - GitHub workflow to automatically deploy the application to GKE on push to master
+
 How to deploy to Heroku
 -----------------------
 First create a Heroku application and basic configuration required for python
