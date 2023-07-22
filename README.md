@@ -11,14 +11,11 @@ $ poetry add winter
 $ poetry run django-admin startproject simple_api .
 ```
 
-Add `rest_framework` to `settings.INSTALLED_APPS`
-
 Add `simple_api/api.py` with contents:
 ```python
 import winter
 
 
-@winter.web.no_authentication
 class SimpleAPI:
     @winter.route_get('greeting/')
     def greeting(self) -> str:
@@ -37,12 +34,6 @@ urlpatterns = create_django_urls_from_routes(routes)
 
 Add the following code to `settings.py`
 ```python
-REST_FRAMEWORK = {
-    'DEFAULT_RENDERER_CLASSES': [
-        'winter_django.renderers.JSONRenderer',
-    ],
-}
-
 import winter.core
 import winter_django
 import winter_openapi
@@ -66,7 +57,6 @@ from django.http import HttpResponse
 from winter.web import find_package_routes
 
 
-@winter.web.no_authentication
 class OpenAPI:
     @winter.route_get('openapi.json')
     def openapi(self):

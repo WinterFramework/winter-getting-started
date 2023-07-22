@@ -4,7 +4,6 @@ from django.http import HttpResponse
 from winter.web import find_package_routes
 
 
-@winter.web.no_authentication
 class OpenAPI:
     @winter.route_get('openapi.json')
     def openapi(self):
