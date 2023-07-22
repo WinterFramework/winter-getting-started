@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: winter-getting-started-deployment
+  labels:
+    app: winter-getting-started
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: winter-getting-started
+  template:
+    metadata:
+      labels:
+        app: winter-getting-started
+    spec:
+      containers:
+      - name: winter-getting-started-app
+        image: gcr.io/winter-framework/winter-getting-started:latest
+        ports:
+        - containerPort: 8080

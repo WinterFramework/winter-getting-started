@@ -1,6 +1,6 @@
 FROM python:3.8.13-alpine3.16
 
-ENV PYTHONUNBUFFERED=1 POETRY_VERSION=1.1.15
+ENV PYTHONUNBUFFERED=1 POETRY_VERSION=1.5.1
 
 RUN apk add --no-cache build-base libffi-dev musl-dev postgresql-dev
 RUN pip install "poetry==$POETRY_VERSION"
@@ -13,4 +13,4 @@ RUN poetry config virtualenvs.create false \
 
 COPY . /app
 
-CMD gunicorn --bind :$PORT simple_api.wsgi
+CMD gunicorn --bind :8080 simple_api.wsgi
