@@ -44,7 +44,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build]
     environment:
-      name: production
+      name: GKE
       url: ${{ steps.deploy.outputs.service_url }}
 
     steps:
