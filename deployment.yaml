@@ -19,3 +19,17 @@ spec:
         image: gcr.io/winter-framework/winter-getting-started:latest
         ports:
         - containerPort: 8080
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: winter-getting-started-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: winter-getting-started
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080
