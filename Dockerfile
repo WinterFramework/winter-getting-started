@@ -1,8 +1,8 @@
-FROM python:3.8.13-alpine3.16
-
-ENV PYTHONUNBUFFERED=1 POETRY_VERSION=1.5.1
+FROM python:3.10-alpine3.20
 
 RUN apk add --no-cache build-base libffi-dev musl-dev postgresql-dev
+
+ENV PYTHONUNBUFFERED=1 POETRY_VERSION=1.8.3
 RUN pip install "poetry==$POETRY_VERSION"
 
 WORKDIR /app
