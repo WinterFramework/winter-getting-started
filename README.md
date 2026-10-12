@@ -2,6 +2,8 @@
 
 How to start project with Winter
 --------------------------------
+Winter needs Python 3.11 or newer.
+
 Bootstrap empty project
 ```shell
 $ poetry init
@@ -9,79 +11,116 @@ $ poetry add winter
 $ poetry run django-admin startproject simple_api .
 ```
 
-Add `simple_api/api.py` with contents:
+Add `simple_api/api/__init__.py` (empty) and `simple_api/api/api.py` with contents:
 ```python
-import winter
+from http import HTTPStatus
+
+import winter.web
+
+
+@winter.web.problem(status=HTTPStatus.BAD_REQUEST)
+class NameTooLongException(Exception):
+    def __init__(self, max_length: int):
+        super().__init__(f'Name must be at most {max_length} characters long')
 
 
 class SimpleAPI:
-    @winter.route_get('greeting/')
+    @winter.web.route_get('greeting/')
     def greeting(self) -> str:
         return 'Hello from Winter API!'
+
+    @winter.web.route_get('greeting/{name}/')
+    @winter.web.raises(NameTooLongException)
+    def personal_greeting(self, name: str) -> str:
+        if len(name) > 20:
+            raise NameTooLongException(max_length=20)
+        return f'Hello, {name}!'
 ```
 
-Modify `urls.py` to the following:
+Replace `simple_api/urls.py` with:
 ```python
-from winter.web import find_package_routes
-from winter_django import create_django_urls_from_routes
+import winter.django
+import winter.web
 
-routes = find_package_routes('simple_api')
-urlpatterns = create_django_urls_from_routes(routes)
-
+routes = winter.web.find_package_routes('simple_api.api')
+urlpatterns = winter.django.create_django_urls_from_routes(routes)
 ```
 
-Add the following code to `settings.py`
+Add `simple_api/apps.py` with contents:
 ```python
-import winter.core
-import winter_django
-import winter_openapi
-from injector import Injector
+from django.apps import AppConfig
 
 
-winter.core.set_injector(Injector())
-winter.web.setup()
-winter_django.setup()
-winter_openapi.setup(allow_missing_raises_annotation=True)
+class SimpleApiConfig(AppConfig):
+    name = 'simple_api'
+
+    def ready(self):
+        import winter.application
+        import winter.django
+        import winter.openapi
+        import winter.web
+        from injector import Injector
+
+        # Import the URLs first: route discovery imports every API module, so the setup calls
+        # below see all @problem exceptions and @raises annotations.
+        import simple_api.urls  # noqa: F401
+
+        winter.application.set_injector(Injector())
+        winter.web.setup()
+        winter.django.setup()
+        winter.openapi.setup(allow_missing_raises_annotation=True)
 ```
+
+The order matters. Setup registers handlers only for the exception classes that are already
+imported, so call it after the routes are discovered, not from `settings.py`.
+
+Add `'simple_api'` to `INSTALLED_APPS` in `settings.py`.
 
 Add OpenAPI and Swagger UI
 --------------------------
 
-Add `src/openapi.py` with the following contents:
+Add `simple_api/docs/__init__.py` (empty) and `simple_api/docs/openapi.py` with contents:
 ```python
-import winter
-import winter_openapi
-from django.http import HttpResponse
-from winter.web import find_package_routes
+import winter.openapi
+import winter.web
 
 
 class OpenAPI:
-    @winter.route_get('openapi.json')
+    @winter.web.route_get('openapi.json')
     def openapi(self):
         """OpenAPI specification"""
-        routes = find_package_routes('simple_api.api')
-        return winter_openapi.generate_openapi(
+        routes = winter.web.find_package_routes('simple_api.api')
+        return winter.openapi.generate_openapi(
             'Getting Started Winter API',
             'v1',
             routes,
         )
 
-    @winter.route_get('')
-    def swagger_ui(self):
+    @winter.web.route_get('')
+    def swagger_ui(self) -> winter.web.Response:
         """HTML page with Swagger UI"""
-        html = winter_openapi.get_swagger_ui_html(openapi_url='/openapi.json')
-        return HttpResponse(html, content_type='text/html')
-
+        html = winter.openapi.get_swagger_ui_html(openapi_url='/openapi.json')
+        return winter.web.Response(200, body=html.encode(), headers={'content-type': 'text/html'})
 ```
+
+Add its routes in `simple_api/urls.py`:
+```python
+routes = [
+    *winter.web.find_package_routes('simple_api.api'),
+    *winter.web.find_package_routes('simple_api.docs'),
+]
+```
+
+Keep tests and other modules out of the scanned packages: route discovery imports every module in them.
 
 How to run
 ----------
 
-You can use any WSGI server, for example gunicorn or waitress:
+You can use any WSGI server, for example gunicorn:
 
 ```shell
 $ poetry add gunicorn
-$ poetry run gunicorn simple_api:wsgi
+$ poetry run gunicorn simple_api.wsgi
 ```
 
 Check it's working http://localhost:8000/greeting/
@@ -93,16 +132,48 @@ $ http get http://localhost:8000/greeting/
 Expected output:
 ```
 HTTP/1.1 200 OK
-Allow: GET, HEAD, OPTIONS
+Server: gunicorn
+Date: Mon, 12 Oct 2026 16:53:43 GMT
+Connection: close
+content-type: application/json
+X-Frame-Options: DENY
 Content-Length: 24
-Content-Type: application/json
-Date: Wed, 03 Aug 2022 21:44:55 GMT
-Server: WSGIServer/0.2 CPython/3.8.7
-Vary: Accept, Cookie
-X-Frame-Options: SAMEORIGIN
+X-Content-Type-Options: nosniff
+Referrer-Policy: same-origin
+Cross-Origin-Opener-Policy: same-origin
 
 "Hello from Winter API!"
 ```
+
+A name that is too long returns a problem response in accordance with [RFC 7807](https://tools.ietf.org/html/rfc7807):
+
+```shell
+$ http get http://localhost:8000/greeting/a-name-that-is-way-too-long/
+```
+
+```
+HTTP/1.1 400 Bad Request
+Content-Type: application/problem+json
+
+{
+    "detail": "Name must be at most 20 characters long",
+    "status": 400,
+    "title": "Name too long",
+    "type": "urn:problem-type:name-too-long"
+}
+```
+
+Swagger UI is at http://localhost:8000/
+
+How to test
+-----------
+
+```shell
+$ poetry install
+$ poetry run pytest
+```
+
+See [conftest.py](conftest.py) for an `httpx` client that calls the WSGI application in-process.
 
 How to deploy to GKE
 --------------------
@@ -111,54 +182,3 @@ The repository contains the example deployment to GKE. Files of interest:
 - [Dockerfile](Dockerfile) - Dockerfile to build the application image
 - [deployment.yaml](deployment.yaml) - k8s deployment configuration
 - [.github/workflows/gke.yml](.github/workflows/gke.yml) - GitHub workflow to automatically deploy the application to GKE on push to master
-
-How to deploy to Heroku
------------------------
-First create a Heroku application and basic configuration required for python
-
-```shell
-$ heroku apps:create winter-getting-started
-```
-
-Add poetry buildpack for Heroku:
-```shell
-$ heroku buildpacks:add https://github.com/moneymeets/python-poetry-buildpack.git
-$ heroku buildpacks:add heroku/python
-```
-
-Add `Procfile` with contents:
-```
-web: gunicorn simple_api.wsgi
-```
-
-Add heroku hosts to settings.ALLOWED_HOSTS
-```
-ALLOWED_HOSTS = ['127.0.0.1', '.herokuapp.com']
-```
-
-Then push the current version to deploy it
-
-```shell
-$ git push heroku master
-```
-
-Check it's working https://winter-getting-started.herokuapp.com/greeting/
-```shell
-$ http get https://winter-getting-started.herokuapp.com/greeting/
-```
-
-Expected output:
-```
-HTTP/1.1 200 OK 
-Allow: GET, HEAD, OPTIONS
-Connection: keep-alive
-Content-Length: 24
-Content-Type: application/json
-Date: Wed, 03 Aug 2022 22:51:26 GMT
-Server: gunicorn
-Vary: Cookie
-Via: 1.1 vegur
-X-Frame-Options: SAMEORIGIN
-
-"Hello from Winter API!"
-```
