@@ -3,7 +3,7 @@ name = "winter-getting-started"
 version = "1.0"
 requires-python = ">=3.11,<4"
 dependencies = [
-    "winter>=33.0.1,<34",
+    "winter>=33.1,<34",
     "gunicorn>=23",
 ]
 

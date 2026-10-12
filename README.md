@@ -11,7 +11,7 @@ $ poetry add winter
 $ poetry run django-admin startproject simple_api .
 ```
 
-Add `simple_api/api/__init__.py` (empty) and `simple_api/api/api.py` with contents:
+Add `simple_api/api.py` with contents:
 ```python
 from http import HTTPStatus
 
@@ -79,7 +79,7 @@ Add `'simple_api'` to `INSTALLED_APPS` in `settings.py`.
 Add OpenAPI and Swagger UI
 --------------------------
 
-Add `simple_api/docs/__init__.py` (empty) and `simple_api/docs/openapi.py` with contents:
+Add `simple_api/openapi.py` with contents:
 ```python
 import winter.openapi
 import winter.web
@@ -107,11 +107,12 @@ Add its routes in `simple_api/urls.py`:
 ```python
 routes = [
     *winter.web.find_package_routes('simple_api.api'),
-    *winter.web.find_package_routes('simple_api.docs'),
+    *winter.web.find_package_routes('simple_api.openapi'),
 ]
 ```
 
-Keep tests and other modules out of the scanned packages: route discovery imports every module in them.
+`find_package_routes` takes a module or a package. A package is scanned with all its modules, so do not
+scan `simple_api` itself: that would import `wsgi.py` and the settings during setup.
 
 How to run
 ----------
