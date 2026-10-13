@@ -1,7 +1,7 @@
-import winter
+import winter.web
 
 
 class SimpleAPI:
-    @winter.route_get('greeting/')
+    @winter.web.route_get('greeting/')
     def greeting(self) -> str:
         return 'Hello from Winter API!'

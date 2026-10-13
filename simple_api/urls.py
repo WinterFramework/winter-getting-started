@@ -1,5 +1,8 @@
-from winter.web import find_package_routes
-from winter_django import create_django_urls_from_routes
+import winter.django
+import winter.web
 
-routes = find_package_routes('simple_api')
-urlpatterns = create_django_urls_from_routes(routes)
+routes = [
+    *winter.web.find_package_routes('simple_api.api'),
+    *winter.web.find_package_routes('simple_api.openapi'),
+]
+urlpatterns = winter.django.create_django_urls_from_routes(routes)
