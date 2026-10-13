@@ -13,28 +13,13 @@ $ poetry run django-admin startproject simple_api .
 
 Add `simple_api/api.py` with contents:
 ```python
-from http import HTTPStatus
-
 import winter.web
-
-
-@winter.web.problem(status=HTTPStatus.BAD_REQUEST)
-class NameTooLongException(Exception):
-    def __init__(self, max_length: int):
-        super().__init__(f'Name must be at most {max_length} characters long')
 
 
 class SimpleAPI:
     @winter.web.route_get('greeting/')
     def greeting(self) -> str:
         return 'Hello from Winter API!'
-
-    @winter.web.route_get('greeting/{name}/')
-    @winter.web.raises(NameTooLongException)
-    def personal_greeting(self, name: str) -> str:
-        if len(name) > 20:
-            raise NameTooLongException(max_length=20)
-        return f'Hello, {name}!'
 ```
 
 Replace `simple_api/urls.py` with:
@@ -144,24 +129,6 @@ Referrer-Policy: same-origin
 Cross-Origin-Opener-Policy: same-origin
 
 "Hello from Winter API!"
-```
-
-A name that is too long returns a problem response in accordance with [RFC 7807](https://tools.ietf.org/html/rfc7807):
-
-```shell
-$ http get http://localhost:8000/greeting/a-name-that-is-way-too-long/
-```
-
-```
-HTTP/1.1 400 Bad Request
-Content-Type: application/problem+json
-
-{
-    "detail": "Name must be at most 20 characters long",
-    "status": 400,
-    "title": "Name too long",
-    "type": "urn:problem-type:name-too-long"
-}
 ```
 
 Swagger UI is at http://localhost:8000/
