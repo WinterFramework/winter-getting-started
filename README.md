@@ -143,10 +143,66 @@ $ poetry run pytest
 
 See [conftest.py](conftest.py) for an `httpx` client that calls the WSGI application in-process.
 
-How to deploy to GKE
---------------------
+How to deploy to Azure Container Apps
+-------------------------------------
 
-The repository contains the example deployment to GKE. Files of interest:
-- [Dockerfile](Dockerfile) - Dockerfile to build the application image
-- [deployment.yaml](deployment.yaml) - k8s deployment configuration
-- [.github/workflows/gke.yml](.github/workflows/gke.yml) - GitHub workflow to automatically deploy the application to GKE on push to master
+The application runs as a container app that scales to zero when idle, so a demo fits in the monthly free
+grant of the Consumption plan. The image is public on GitHub Container Registry, which needs no registry
+in Azure. GitHub Actions signs in to Azure with OpenID Connect, so no long-lived secret is stored.
+
+Files of interest:
+- [Dockerfile](Dockerfile) - the application image
+- [.github/workflows/docker.yml](.github/workflows/docker.yml) - builds the image and checks that the container answers, on every push
+- [.github/workflows/azure.yml](.github/workflows/azure.yml) - deploys to Azure on demand and once a month, then checks that the deployment answers
+
+One-time setup with the Azure CLI and the GitHub CLI:
+
+```shell
+RESOURCE_GROUP=winter-getting-started
+CONTAINER_APP=winter-getting-started
+LOCATION=westeurope
+REPOSITORY=WinterFramework/winter-getting-started
+
+az group create --name $RESOURCE_GROUP --location $LOCATION
+
+# No Log Analytics workspace: it would be billed separately
+az containerapp env create --name $CONTAINER_APP-env --resource-group $RESOURCE_GROUP \
+  --location $LOCATION --logs-destination none
+
+# A placeholder image until the first deployment
+az containerapp create --name $CONTAINER_APP --resource-group $RESOURCE_GROUP \
+  --environment $CONTAINER_APP-env --image mcr.microsoft.com/k8se/quickstart:latest \
+  --ingress external --target-port 8080 --min-replicas 0 --max-replicas 1 --cpu 0.25 --memory 0.5Gi
+
+# An identity for GitHub Actions, trusted only for the "azure" environment of this repository
+APP_ID=$(az ad app create --display-name $CONTAINER_APP-github --query appId --output tsv)
+az ad sp create --id $APP_ID
+az ad app federated-credential create --id $APP_ID --parameters "{
+  \"name\": \"github-azure-environment\",
+  \"issuer\": \"https://token.actions.githubusercontent.com\",
+  \"subject\": \"repo:$REPOSITORY:environment:azure\",
+  \"audiences\": [\"api://AzureADTokenExchange\"]
+}"
+az role assignment create --assignee $APP_ID --role Contributor \
+  --scope "$(az group show --name $RESOURCE_GROUP --query id --output tsv)"
+
+# Deployments only from master
+gh api --method PUT repos/$REPOSITORY/environments/azure \
+  --input - <<< '{"deployment_branch_policy": {"protected_branches": false, "custom_branch_policies": true}}'
+gh api --method POST repos/$REPOSITORY/environments/azure/deployment-branch-policies -f name=master
+
+gh secret set AZURE_CLIENT_ID --repo $REPOSITORY --body $APP_ID
+gh secret set AZURE_TENANT_ID --repo $REPOSITORY --body "$(az account show --query tenantId --output tsv)"
+gh secret set AZURE_SUBSCRIPTION_ID --repo $REPOSITORY --body "$(az account show --query id --output tsv)"
+```
+
+Then run the workflow once:
+
+```shell
+gh workflow run azure.yml --repo $REPOSITORY
+```
+
+After the first run, make the `winter-getting-started` package public in the package settings on GitHub,
+so that Azure can pull the image without credentials, and run the workflow again.
+
+A budget alert on the resource group in the Azure portal guards against surprises.
