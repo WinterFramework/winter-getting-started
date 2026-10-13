@@ -1,0 +1,17 @@
+name: docker
+on: push
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Build image
+        run: docker build --tag winter-getting-started .
+      - name: Start container
+        run: docker run --detach --name app --publish 8080:8080 winter-getting-started
+      - name: Smoke test
+        run: ./smoke_test.sh http://localhost:8080
+      - name: Container logs
+        if: failure()
+        run: docker logs app
