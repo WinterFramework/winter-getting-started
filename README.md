@@ -185,9 +185,8 @@ in Azure. GitHub Actions signs in to Azure with OpenID Connect, so no long-lived
 
 Files of interest:
 - [Dockerfile](Dockerfile) - the application image
-- [.github/workflows/docker.yml](.github/workflows/docker.yml) - builds the image, runs it and checks the responses on every push
-- [.github/workflows/azure.yml](.github/workflows/azure.yml) - deploys to Azure on demand and once a month, then checks the deployed app
-- [smoke_test.sh](smoke_test.sh) - the response checks used by both workflows
+- [.github/workflows/docker.yml](.github/workflows/docker.yml) - builds the image and checks that the container answers, on every push
+- [.github/workflows/azure.yml](.github/workflows/azure.yml) - deploys to Azure on demand and once a month, then checks that the deployment answers
 
 One-time setup with the Azure CLI and the GitHub CLI:
 

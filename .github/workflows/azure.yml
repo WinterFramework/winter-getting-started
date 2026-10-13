@@ -52,5 +52,6 @@ jobs:
             --query properties.configuration.ingress.fqdn --output tsv)
           echo "url=https://$fqdn" >> "$GITHUB_OUTPUT"
 
-      - name: Smoke test
-        run: ./smoke_test.sh "${{ steps.deploy.outputs.url }}"
+      - name: Check that the app answers
+        # Scaled to zero, the app needs time to start
+        run: curl --fail --retry 15 --retry-all-errors --retry-delay 10 "${{ steps.deploy.outputs.url }}/greeting/"
